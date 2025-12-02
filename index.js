@@ -9,25 +9,26 @@ const config = {
 const app = express();
 const client = new Client(config);
 
+// Webhook
 app.post('/webhook', middleware(config), async (req, res) => {
+  res.sendStatus(200); // ตอบ LINE ก่อน
+
   const events = req.body.events;
 
-  // ตอบกลับ LINE เพื่อบอกว่า "รับ webhook แล้ว"
-  res.sendStatus(200);
-
   for (const event of events) {
-    const userId = event.source.userId;
+    console.log("USER ID:", event.source.userId);
 
-    // ถ้าเป็นข้อความ → ให้ตอบกลับตามที่คุณต้องการ
+    // เช็คว่าเป็นข้อความหรือไม่
     if (event.type === 'message' && event.message.type === 'text') {
       await client.replyMessage(event.replyToken, {
         type: 'text',
-        text: 'เราคือระบบ bot เราจะส่งข้อความเฉพาะเมื่อมีเหตุการณ์'
+        text: "เราคือระบบ bot เราจะส่งข้อความเฉพาะเมื่อมีเหตุการณ์"
       });
     }
   }
 });
 
+// ใช้ PORT ของ Render
 app.listen(process.env.PORT || 3000, () => {
-  console.log('Server is running');
+  console.log('Server running...');
 });
