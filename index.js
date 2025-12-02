@@ -55,4 +55,29 @@ app.get('/plc', async (req, res) => {
 
   res.send("OK");
 });
+// ====================================================================
+// รับข้อมูลจาก PLC ที่ส่งแบบ POST มาที่ /plc
+// ====================================================================
+app.post('/plc', express.json(), async (req, res) => {
+  const { motor } = req.body;
+
+  let message = "";
+
+  if (motor === 1) {
+    message = "motor 1 หยุดทำงาน Overload";
+  } else if (motor === 2) {
+    message = "motor 2 หยุดทำงาน Overload";
+  } else {
+    return res.status(400).send("invalid motor");
+  }
+
+  await client.pushMessage("Uf9c69c39564aa43bbd2888fe395ec302", {
+    type: "text",
+    text: message
+  });
+
+  res.send("OK");
+});
+
+
 
