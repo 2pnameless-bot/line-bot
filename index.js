@@ -32,3 +32,27 @@ app.post('/webhook', middleware(config), async (req, res) => {
 app.listen(process.env.PORT || 3000, () => {
   console.log('Server running...');
 });
+// =============================
+// API สำหรับ PLC ส่งข้อมูลเข้ามา
+// =============================
+app.get('/plc', async (req, res) => {
+  const alarm = req.query.alarm;   // plc ส่งมาเป็น alarm=1 หรือ alarm=2
+
+  let message = "";
+
+  if (alarm === "1") {
+    message = "⚠️ Motor 1 หยุดทำงาน (Overload)";
+  } else if (alarm === "2") {
+    message = "⚠️ Motor 2 หยุดทำงาน (Overload)";
+  } else {
+    return res.send("ไม่มีข้อมูล alarm");
+  }
+
+  // ส่งแจ้งเตือนกลับไปยัง User ID ที่คุณได้จาก LOG
+  const userId = "Uf9c69c39564aa43bbd2888fe395ec302";   // ใส่ user id ของคุณ
+
+  await client.pushMessage(userId, { type: "text", text: message });
+
+  res.send("OK");
+});
+
