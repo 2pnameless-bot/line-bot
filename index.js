@@ -12,18 +12,14 @@ const client = new Client(config);
 app.post('/webhook', middleware(config), async (req, res) => {
   const events = req.body.events;
 
-  // ให้ LINE รู้ว่าเรารับข้อมูลแล้ว (สำคัญ!)
   res.sendStatus(200);
 
   for (const event of events) {
-    const userId = event.source.userId;
-    console.log("USER ID:", userId);
-
-    // ไม่ส่งข้อความกลับใด ๆ ทั้งสิ้น
-    // อยากเก็บข้อมูล ลดคำตอบ หรือประมวลผลเองเพิ่มได้ในส่วนนี้
+    console.log("USER ID:", event.source.userId);
   }
 });
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+// ***** แก้ตรงนี้! Render ต้องใช้ process.env.PORT *****
+app.listen(process.env.PORT || 3000, () => {
+  console.log('Server is running');
 });
