@@ -12,14 +12,22 @@ const client = new Client(config);
 app.post('/webhook', middleware(config), async (req, res) => {
   const events = req.body.events;
 
+  // ตอบกลับ LINE เพื่อบอกว่า "รับ webhook แล้ว"
   res.sendStatus(200);
 
   for (const event of events) {
-    console.log("USER ID:", event.source.userId);
+    const userId = event.source.userId;
+
+    // ถ้าเป็นข้อความ → ให้ตอบกลับตามที่คุณต้องการ
+    if (event.type === 'message' && event.message.type === 'text') {
+      await client.replyMessage(event.replyToken, {
+        type: 'text',
+        text: 'เราคือระบบ bot เราจะส่งข้อความเฉพาะเมื่อมีเหตุการณ์'
+      });
+    }
   }
 });
 
-// ***** แก้ตรงนี้! Render ต้องใช้ process.env.PORT *****
 app.listen(process.env.PORT || 3000, () => {
   console.log('Server is running');
 });
